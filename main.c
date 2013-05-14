@@ -308,6 +308,7 @@ void list_free_element(listNode_t* elem)
 
 int list_insert_before(doubleLinkedList_t *list , listNode_t* old ,listNode_t* elem)
 {
+	int32_t ret = EXIT_SUCCESS;
 	if (NULL!= old && NULL != elem)
 	{
 		if (old == list->headOfList)
@@ -328,12 +329,19 @@ int list_insert_before(doubleLinkedList_t *list , listNode_t* old ,listNode_t* e
 			elem->pNext = old;
 			old->pPrev = elem;
 		}
+		ret = EXIT_SUCCESS;
 	}
+	else
+	{
+		ret = EXIT_FAILURE;
+	}
+	return ret;
 
 }
 
 int list_insert_after(doubleLinkedList_t *list , listNode_t* old ,listNode_t* elem)
 {
+	int32_t ret = EXIT_SUCCESS;
 	if (NULL!= old && NULL != elem)
 	{
 		if (old == list->tailOfList)
@@ -354,53 +362,53 @@ int list_insert_after(doubleLinkedList_t *list , listNode_t* old ,listNode_t* el
 			elem->pPrev = old;
 			old->pNext = elem;
 		}
+		ret = EXIT_SUCCESS;
 	}
+	else
+	{
+		ret = EXIT_FAILURE;
+	}
+	return ret;
 }
 
 int list_push_front(doubleLinkedList_t *list , listNode_t* elem)
 {
+	int32_t ret = EXIT_SUCCESS;
 	if (NULL != elem)
 	{
-		if (elem != list->headOfList)
-		{
-			listNode_t *Prev = NULL;
-			listNode_t *Next = NULL;
-			listNode_t *Head = NULL;
-			Prev = elem->pPrev;
-			Next = elem->pNext;
-			Head = list->headOfList;
-			
-			Prev->pNext = elem->pNext;
-			Next->pPrev = elem->pPrev;
-			Head->pPrev = elem;
-
-			elem->pPrev = NULL;
-			elem->pNext = list->headOfList;
-			list->headOfList = elem;
-		}
+		listNode_t *Head = NULL;
+		Head = list->headOfList;
+		
+		Head->pPrev = elem;
+		elem->pPrev = NULL;
+		elem->pNext = list->headOfList;		
+		list->headOfList = elem;
+		ret = EXIT_SUCCESS;
 	}
+	else
+	{
+		ret = EXIT_FAILURE;
+	}
+	return ret;
 }
 
 int list_push_back(doubleLinkedList_t *list, listNode_t* elem)
 {
+	int32_t ret = EXIT_SUCCESS;
 	if (NULL != elem)
-	{
-		if (elem != list->tailOfList)
-		{
-			listNode_t *Prev = NULL;
-			listNode_t *Next = NULL;
-			listNode_t *Tail = NULL;
-			Prev = elem->pPrev;
-			Next = elem->pNext;
-			Tail = list->tailOfList;
-			
-			Prev->pNext = elem->pNext;
-			Next->pPrev = elem->pPrev;
-			Tail->pNext = elem;
-
-			elem->pNext = NULL;
-			elem->pPrev = list->tailOfList;
-			list->tailOfList = elem;
-		}
+	{	
+		listNode_t *Tail = NULL;
+		Tail = list->tailOfList;
+		
+		Tail->pNext = elem;
+		elem->pNext = NULL;
+		elem->pPrev = list->tailOfList;
+		list->tailOfList = elem;
+		ret = EXIT_SUCCESS;
 	}
+	else
+	{
+		ret = EXIT_FAILURE;
+	}
+	return ret;
 }
