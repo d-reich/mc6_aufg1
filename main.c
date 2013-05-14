@@ -100,7 +100,7 @@ void calculate_statistics(statistics_t * stat,uint32_t operand_a,uint32_t operan
  * @param [in] operand_a The operand a for the MAC operation
  * @param [in] operand_b The operand b for the MAC operation
  * @param [in] result The result of the MAC operation
- * @result he new element or NULL in case of error
+ * @result the new element or NULL in case of error
  */
 listNode_t* list_get_new_element(uint32_t operand_a,uint32_t operand_b,uint64_t result);
 
@@ -279,5 +279,128 @@ void calculate_statistics(statistics_t * stat,uint32_t operand_a,uint32_t operan
 		stat->counter++;
 		stat->avg_operand_a = stat->sum_operand_a/stat->counter;
 		stat->avg_operand_b = stat->sum_operand_b/stat->counter;
+	}
+}
+
+listNode_t* list_get_new_element(uint32_t operand_a,uint32_t operand_b,uint64_t result)
+{
+	listNode_t *temp = NULL;
+	temp = (listNode_t*) malloc(sizeof(listNode_t));		// Speicher für neues Element
+	if (NULL != temp)										// Ergebnis von malloc prüfen
+	{
+		temp->operand_a = operand_a;						// Dereferenzieren mit ->
+		temp->operand_b = operand_b;
+		temp->result = result;
+		temp->pNext = NULL;
+		temp->pPrev = NULL;
+	}
+	return temp;
+}
+
+void list_free_element(listNode_t* elem)
+{
+	if (NULL != elem)										// "Pointer Firewall"
+	{
+		free((void*) elem);
+		elem = NULL;
+	}
+}
+
+int list_insert_before(doubleLinkedList_t *list , listNode_t* old ,listNode_t* elem)
+{
+	if (NULL!= old && NULL != elem)
+	{
+		if (old == list->headOfList)
+		{
+			elem->pPrev = NULL;
+			elem->pNext = old;
+			old->pPrev = elem;
+			list->headOfList = elem;
+		}
+
+		else
+		{
+			listNode_t *temp = NULL;
+			temp = old->pPrev;
+			temp->pNext = elem;
+
+			elem->pPrev = old->pPrev;
+			elem->pNext = old;
+			old->pPrev = elem;
+		}
+	}
+
+}
+
+int list_insert_after(doubleLinkedList_t *list , listNode_t* old ,listNode_t* elem)
+{
+	if (NULL!= old && NULL != elem)
+	{
+		if (old == list->tailOfList)
+		{
+			elem->pNext = NULL;
+			elem->pPrev = old;
+			old->pNext = elem;
+			list->tailOfList = elem;
+		}
+
+		else
+		{
+			listNode_t *temp = NULL;
+			temp = old->pNext;
+			temp->pPrev = elem;
+
+			elem->pNext = old->pNext;
+			elem->pPrev = old;
+			old->pNext = elem;
+		}
+	}
+}
+
+int list_push_front(doubleLinkedList_t *list , listNode_t* elem)
+{
+	if (NULL != elem)
+	{
+		if (elem != list->headOfList)
+		{
+			listNode_t *Prev = NULL;
+			listNode_t *Next = NULL;
+			listNode_t *Head = NULL;
+			Prev = elem->pPrev;
+			Next = elem->pNext;
+			Head = list->headOfList;
+			
+			Prev->pNext = elem->pNext;
+			Next->pPrev = elem->pPrev;
+			Head->pPrev = elem;
+
+			elem->pPrev = NULL;
+			elem->pNext = list->headOfList;
+			list->headOfList = elem;
+		}
+	}
+}
+
+int list_push_back(doubleLinkedList_t *list, listNode_t* elem)
+{
+	if (NULL != elem)
+	{
+		if (elem != list->tailOfList)
+		{
+			listNode_t *Prev = NULL;
+			listNode_t *Next = NULL;
+			listNode_t *Tail = NULL;
+			Prev = elem->pPrev;
+			Next = elem->pNext;
+			Tail = list->tailOfList;
+			
+			Prev->pNext = elem->pNext;
+			Next->pPrev = elem->pPrev;
+			Tail->pNext = elem;
+
+			elem->pNext = NULL;
+			elem->pPrev = list->tailOfList;
+			list->tailOfList = elem;
+		}
 	}
 }
